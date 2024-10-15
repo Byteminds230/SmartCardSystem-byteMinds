@@ -1,0 +1,36 @@
+# General
+*.log
+*.pyc
+__pycache__/
+.DS_Store
+
+# Environment variables
+.env
+
+# Django
+/backend/db.sqlite3
+/backend/media/
+*.pot
+*.py[cod]
+*.sqlite3
+/backend/staticfiles/
+*.env
+
+# React (frontend)
+node_modules/
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Vite and build artifacts
+/frontend/public/build/
+/frontend/.vite/
+
+# Python virtual environment
+venv/
+env/
+
+# Editor/IDE specific
+.vscode/
+.idea/
