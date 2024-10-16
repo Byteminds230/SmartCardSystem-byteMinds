@@ -48,3 +48,5 @@ Image handling tools (Pillow) are necessary for processing QR code images.
 Database adapter (psycopg2-binary) connects Django to a PostgreSQL database.
 Development tools (django-debug-toolbar, pytest-django) help with debugging and testing.
 These packages collectively support the full functionality needed for your card scanning, QR code, background processing, and email-sending Django application.
+
+9 . framer motion in react for some basic anmations 

@@ -8,7 +8,7 @@ import random
 class Card(models.Model):
     card_number = models.IntegerField(unique=True, null=True, blank=True)
     card_type = models.CharField(max_length=50, choices=[('NFC', 'NFC'), ('RFID', 'RFID')])
-    owner = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True)
+    owner = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True , related_name='user')
     issued_date = models.DateField()
     expiry_date = models.DateField()
     is_active = models.BooleanField(default=True)
@@ -72,7 +72,7 @@ class ScanDevice(models.Model):
     
 class CardScan(models.Model):
     card = models.ForeignKey(Card, on_delete=models.CASCADE)
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE , related_name='users')
     location = models.CharField(max_length=255)
     scan_date = models.DateTimeField(auto_now_add=True)
     scan_result = models.TextField()
