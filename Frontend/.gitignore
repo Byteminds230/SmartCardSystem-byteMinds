@@ -26,3 +26,6 @@ dist-ssr
 josueEnv
 ./josueEnv
 .josueEnv
+
+.env
+./.env

@@ -1,34 +1,23 @@
-import axios from 'axios'
-import { useEffect, useState } from 'react'
-const App = ()=>{
-  const [users , setUsers] = useState([])
-  useEffect(()=>{
-    
-    const fetchData = async()=>{
-      try{
-        const data = await axios.get('http://localhost:8000/users/')
-        const res = await data.json();
-        setUsers(res)
-        console.log(res)
-      }catch(error){
-        console.error(error)
-      }
-    }
-    fetchData()
-  } ,[])
-  
+import React,{lazy,Suspense} from 'react'
+import {Router,Routes,Route} from 'react-router-dom'
 
-return(
-  <>
-  <p>{
-    users.map((user , index)=>{
-      return <p key={index}>{user.name}</p>
-    })
-    }</p>
-  </>
-)
+// importation of the pages nested navigations
+const Dashboard = lazy(()=> import('./pages/Dashboard'));
+const Settings = lazy(()=> import('./pages/Settings'));
+const NotFound = lazy(()=> import('./pages/NotFound'));
+
+function App() {
+  return (
+    <>
+    <Suspense fallback={<p>loading...</p>}>
+      <Routes>
+        <Route path='/' element={<Dashboard/>} />
+        <Route path='/settings' element={<Settings/>} />
+        <Route path='*' element={<NotFound/>} />
+      </Routes>
+    </Suspense>
+    </>
+  )
 }
 
 export default App
-
-// this is the basic sample to fetch the api is from the backend : by frank
