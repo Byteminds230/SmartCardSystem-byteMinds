@@ -3,25 +3,28 @@ import { useEffect, useState } from 'react'
 const App = ()=>{
   const [users , setUsers] = useState([])
   useEffect(()=>{
-    axios.get('http://localhost:8000/users/')
-    .then((response)=>{
-      setUsers(response.data)
-    })
+    
+    const fetchData = async()=>{
+      try{
+        const data = await axios.get('http://localhost:8000/users/')
+        const res = await data.json();
+        setUsers(res)
+        console.log(res)
+      }catch(error){
+        console.error(error)
+      }
+    }
+    fetchData()
   } ,[])
   
 
 return(
   <>
-  <p className="text-blue-500">frank akunda mama we </p>
-<<<<<<< HEAD
-  <p className="md:text-center font-bold text-slate-900">sure se niko bimeze but riba aribyo much respect</p>
-=======
   <p>{
     users.map((user , index)=>{
       return <p key={index}>{user.name}</p>
     })
     }</p>
->>>>>>> fc8b70a9706e4dfa40a3a6e03c7d1ee96864ee4d
   </>
 )
 }
