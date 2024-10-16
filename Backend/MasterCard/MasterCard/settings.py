@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'QrCodesManagement',
     'reportsAnalytics',
     'userManagement',
-    'CardScnning',
+    'CardScanning',
     'rest_framework',
 ]
 
