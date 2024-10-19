@@ -1,97 +1,17 @@
-
-# from djangochannelsrestframework.decorators import action
-# from djangochannelsrestframework.generics import GenericAsyncAPIConsumer
-# from djangochannelsrestframework.observer.generics import ObserverModelInstanceMixin
-# from channels.db import database_sync_to_async
-# from channels.layers import get_channel_layer
-# from .models import Card
-# from userManagement.models import CustomUser
-# from .serializers import CardSerializer
-# from datetime import datetime
-# import json
-
-# class CardConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
-#     queryset = Card.objects.all()
-#     serializer_class = CardSerializer
-#     lookup_field = "pk"
-
-#     async def connect(self):
-#         self.group_name = "card_updates"
-#         await self.channel_layer.group_add(self.group_name, self.channel_name)
-#         await super().connect()
-
-#     async def disconnect(self, close_code):
-#         await self.channel_layer.group_discard(self.group_name, self.channel_name)
-#         await super().disconnect(close_code)
-
-#     @action()
-#     async def create_card(self, card_data, **kwargs):
-#         print(f"Received card data: {card_data}")
-#         try:
-#             # Validate and create the card asynchronously
-#             card = await self._create_card(card_data)
-#             # Broadcast the created card to all clients
-#             channel_layer = get_channel_layer()
-#             await channel_layer.group_send(
-#                 self.group_name,
-#                 {
-#                     'type': 'card_created',
-#                     'card': CardSerializer(card).data
-#                 }
-#             )
-#             # Send confirmation to the client who created the card
-#             await self.send_json({
-#                 "action": "card_created",
-#                 "card": CardSerializer(card).data
-#             })
-#         except Exception as e:
-#             # Send an error response if something goes wrong
-#             await self.send_json({
-#                 "action": "error",
-#                 "message": str(e)
-#             })
-
-#     async def card_created(self, event):
-#         # Send the created card details to the WebSocket
-#         await self.send_json({
-#             "action": "card_created",
-#             "card": event['card']
-#         })
-
-#     @database_sync_to_async
-#     def _create_card(self, card_data):
-#         # Parse dates from strings to date objects
-#         issued_date_str = card_data.get('issued_date')
-#         expiry_date_str = card_data.get('expiry_date')
-#         try:
-#             personal = CustomUser.objects.get(pk=card_data['owner'])
-#         except CustomUser.DoesNotExist:
-#             raise ValueError("Owner not found")
-
-#         issued_date = datetime.strptime(issued_date_str, '%Y-%m-%d').date() if issued_date_str else None
-#         expiry_date = datetime.strptime(expiry_date_str, '%Y-%m-%d').date() if expiry_date_str else None
-
-#         # Create the card instance
-#         return Card.objects.create(
-#             card_number=card_data['card_number'],
-#             card_type=card_data['card_type'],
-#             owner=personal,
-#             issued_date=issued_date,
-#             expiry_date=expiry_date,
-#             is_active=card_data['is_active'],
-#             daily_scan_count=card_data['count'],  # Default to 0 if count is not provided
-#             last_scan_date=card_data['scans']  # Default to None if scans is not provided
-#         )
-
 from djangochannelsrestframework.decorators import action
 from djangochannelsrestframework.generics import GenericAsyncAPIConsumer
 from djangochannelsrestframework.observer.generics import ObserverModelInstanceMixin
 from channels.db import database_sync_to_async
 from channels.layers import get_channel_layer
 from .models import Card
+from QrCodesManagement.models import QRCode  
 from userManagement.models import CustomUser
-from .serializers import CardSerializer
+from .serializers import *
 from datetime import datetime
+import qrcode
+import io
+from django.core.files.base import ContentFile
+import random as rn
 
 class CardConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
     queryset = Card.objects.all()
@@ -111,6 +31,9 @@ class CardConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
     async def create_card(self, card_data, **kwargs):
         try:
             card = await self._create_card(card_data)
+            # Generate QR code for the card
+            qr_code = await self._generate_qr_code(card)
+
             channel_layer = get_channel_layer()
             await channel_layer.group_send(
                 self.group_name,
@@ -121,7 +44,9 @@ class CardConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
             )
             await self.send_json({
                 "action": "card_created",
-                "card": CardSerializer(card).data
+                "card": CardSerializer(card).data,
+                "qr_code": qr_code.code_value,  # Include QR code value in the response
+                "qr_code_image": qr_code.image.url  # Include the QR code image URL
             })
         except Exception as e:
             await self.send_json({
@@ -243,3 +168,24 @@ class CardConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
     def _delete_card(self, card_id):
         card = Card.objects.get(pk=card_id)
         card.delete()
+
+    @database_sync_to_async
+    def _generate_qr_code(self, card):
+        # Generate a unique code for the QR
+        code_value = rn.randint(0, 100000000000000000)  # Generate a random number for QR code
+        # Create QR code image
+        qr_img = qrcode.make(f'{code_value} , \n \n {card.card_number} , \n \n {card.owner.profile}')
+        # Save the QR code to a bytes buffer
+        buffer = io.BytesIO()
+        qr_img.save(buffer, format='PNG')
+        buffer.seek(0)  # Reset buffer position to the beginning
+        qr_code_file = ContentFile(buffer.getvalue(), name=f"qr_code_{code_value}:card :_{card.card_number}.png")
+
+        # Create and save QRCode instance with the image
+        qr_code_instance = QRCode.objects.create(
+            code_value=code_value,
+            associated_card=card,
+            owner=card.owner,  # Associate the QR code with the owner of the card
+            image=qr_code_file  # Save the generated image to the image field
+        )
+        return qr_code_instance  # Return the QR code instance

@@ -23,11 +23,11 @@ class Card(models.Model):
 
         # Generate a random card_number if not already set
         if self.card_number is None:
-            self.card_number = random.randint(0, 16)
+            self.card_number = random.randint(0, 100000000000000000)
 
         # Ensure the card number is unique
         while Card.objects.filter(card_number=self.card_number).exists():
-            self.card_number = random.randint(0, 16)
+            self.card_number = random.randint(0, 100000000000000000)
 
         super().save(*args, **kwargs)
 
