@@ -1,3 +1,4 @@
+
 # from djangochannelsrestframework.decorators import action
 # from djangochannelsrestframework.generics import GenericAsyncAPIConsumer
 # from djangochannelsrestframework.observer.generics import ObserverModelInstanceMixin
@@ -7,6 +8,7 @@
 # from userManagement.models import CustomUser
 # from .serializers import CardSerializer
 # from datetime import datetime
+# import json
 
 # class CardConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
 #     queryset = Card.objects.all()
@@ -18,15 +20,15 @@
 #         await self.channel_layer.group_add(self.group_name, self.channel_name)
 #         await super().connect()
 
-#     async def disconnect(self , close_code):
+#     async def disconnect(self, close_code):
 #         await self.channel_layer.group_discard(self.group_name, self.channel_name)
 #         await super().disconnect(close_code)
 
 #     @action()
 #     async def create_card(self, card_data, **kwargs):
-#         print(f"recieved card data: {card_data}")
+#         print(f"Received card data: {card_data}")
 #         try:
-#             # Create the card asynchronously
+#             # Validate and create the card asynchronously
 #             card = await self._create_card(card_data)
 #             # Broadcast the created card to all clients
 #             channel_layer = get_channel_layer()
@@ -43,6 +45,7 @@
 #                 "card": CardSerializer(card).data
 #             })
 #         except Exception as e:
+#             # Send an error response if something goes wrong
 #             await self.send_json({
 #                 "action": "error",
 #                 "message": str(e)
@@ -60,22 +63,25 @@
 #         # Parse dates from strings to date objects
 #         issued_date_str = card_data.get('issued_date')
 #         expiry_date_str = card_data.get('expiry_date')
-#         personal = CustomUser.objects.get(pk = card_data['owner'])
+#         try:
+#             personal = CustomUser.objects.get(pk=card_data['owner'])
+#         except CustomUser.DoesNotExist:
+#             raise ValueError("Owner not found")
+
 #         issued_date = datetime.strptime(issued_date_str, '%Y-%m-%d').date() if issued_date_str else None
 #         expiry_date = datetime.strptime(expiry_date_str, '%Y-%m-%d').date() if expiry_date_str else None
 
 #         # Create the card instance
 #         return Card.objects.create(
-#             card_number =card_data['card_number'],
-#             card_type = card_data['card_type'],
-#             owner = personal,
-#             issued_date = issued_date,
-#             expiry_date = expiry_date,
-#             is_active = card_data['is_active'],
-#             daily_scan_count = card_data['count'],  
-#             last_scan_date =card_data['scans']
+#             card_number=card_data['card_number'],
+#             card_type=card_data['card_type'],
+#             owner=personal,
+#             issued_date=issued_date,
+#             expiry_date=expiry_date,
+#             is_active=card_data['is_active'],
+#             daily_scan_count=card_data['count'],  # Default to 0 if count is not provided
+#             last_scan_date=card_data['scans']  # Default to None if scans is not provided
 #         )
-
 
 from djangochannelsrestframework.decorators import action
 from djangochannelsrestframework.generics import GenericAsyncAPIConsumer
@@ -86,7 +92,6 @@ from .models import Card
 from userManagement.models import CustomUser
 from .serializers import CardSerializer
 from datetime import datetime
-import json
 
 class CardConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
     queryset = Card.objects.all()
@@ -104,11 +109,8 @@ class CardConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
 
     @action()
     async def create_card(self, card_data, **kwargs):
-        print(f"Received card data: {card_data}")
         try:
-            # Validate and create the card asynchronously
             card = await self._create_card(card_data)
-            # Broadcast the created card to all clients
             channel_layer = get_channel_layer()
             await channel_layer.group_send(
                 self.group_name,
@@ -117,39 +119,100 @@ class CardConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
                     'card': CardSerializer(card).data
                 }
             )
-            # Send confirmation to the client who created the card
             await self.send_json({
                 "action": "card_created",
                 "card": CardSerializer(card).data
             })
         except Exception as e:
-            # Send an error response if something goes wrong
+            await self.send_json({
+                "action": "error",
+                "message": str(e)
+            })
+
+    @action()
+    async def read_card(self, card_id, **kwargs):
+        try:
+            card = await self._read_card(card_id)
+            await self.send_json({
+                "action": "read_card",
+                "card": CardSerializer(card).data
+            })
+        except Exception as e:
+            await self.send_json({
+                "action": "error",
+                "message": str(e)
+            })
+
+    @action()
+    async def update_card(self, card_data, **kwargs):
+        try:
+            card = await self._update_card(card_data)
+            channel_layer = get_channel_layer()
+            await channel_layer.group_send(
+                self.group_name,
+                {
+                    'type': 'card_updated',
+                    'card': CardSerializer(card).data
+                }
+            )
+            await self.send_json({
+                "action": "card_updated",
+                "card": CardSerializer(card).data
+            })
+        except Exception as e:
+            await self.send_json({
+                "action": "error",
+                "message": str(e)
+            })
+
+    @action()
+    async def delete_card(self, card_id, **kwargs):
+        try:
+            await self._delete_card(card_id)
+            channel_layer = get_channel_layer()
+            await channel_layer.group_send(
+                self.group_name,
+                {
+                    'type': 'card_deleted',
+                    'card_id': card_id
+                }
+            )
+            await self.send_json({
+                "action": "card_deleted",
+                "card_id": card_id
+            })
+        except Exception as e:
             await self.send_json({
                 "action": "error",
                 "message": str(e)
             })
 
     async def card_created(self, event):
-        # Send the created card details to the WebSocket
         await self.send_json({
             "action": "card_created",
             "card": event['card']
         })
 
+    async def card_updated(self, event):
+        await self.send_json({
+            "action": "card_updated",
+            "card": event['card']
+        })
+
+    async def card_deleted(self, event):
+        await self.send_json({
+            "action": "card_deleted",
+            "card_id": event['card_id']
+        })
+
     @database_sync_to_async
     def _create_card(self, card_data):
-        # Parse dates from strings to date objects
         issued_date_str = card_data.get('issued_date')
         expiry_date_str = card_data.get('expiry_date')
-        try:
-            personal = CustomUser.objects.get(pk=card_data['owner'])
-        except CustomUser.DoesNotExist:
-            raise ValueError("Owner not found")
-
+        personal = CustomUser.objects.get(pk=card_data['owner'])
         issued_date = datetime.strptime(issued_date_str, '%Y-%m-%d').date() if issued_date_str else None
         expiry_date = datetime.strptime(expiry_date_str, '%Y-%m-%d').date() if expiry_date_str else None
 
-        # Create the card instance
         return Card.objects.create(
             card_number=card_data['card_number'],
             card_type=card_data['card_type'],
@@ -157,21 +220,26 @@ class CardConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
             issued_date=issued_date,
             expiry_date=expiry_date,
             is_active=card_data['is_active'],
-            daily_scan_count=card_data['count'],  # Default to 0 if count is not provided
-            last_scan_date=card_data['scans']  # Default to None if scans is not provided
+            daily_scan_count=card_data['count'],
+            last_scan_date=card_data['scans']
         )
 
-    # async def receive_json(self, content, **kwargs):
-    #     try:
-    #         # Validate JSON content structure here if needed
-    #         action = content.get("action")
-    #         if action == "create_card":
-    #             await self.create_card(content.get("data"))
-    #         else:
-    #             await self.send_json({"action": "error", "message": "Invalid action"})
-    #     except json.JSONDecodeError as e:
-    #         # Handle JSON decoding error gracefully
-    #         await self.send_json({"action": "error", "message": f"Invalid JSON data: {str(e)}"})
-    #     except Exception as e:
-    #         # Handle other exceptions
-    #         await self.send_json({"action": "error", "message": str(e)})
+    @database_sync_to_async
+    def _read_card(self, card_id):
+        return Card.objects.get(pk=card_id)
+
+    @database_sync_to_async
+    def _update_card(self, card_data):
+        card = Card.objects.get(pk=card_data['id'])
+        card.card_number = card_data.get('card_number', card.card_number)
+        card.card_type = card_data.get('card_type', card.card_type)
+        card.is_active = card_data.get('is_active', card.is_active)
+        card.daily_scan_count = card_data.get('count', card.daily_scan_count)
+        card.last_scan_date = card_data.get('scans', card.last_scan_date)
+        card.save()
+        return card
+
+    @database_sync_to_async
+    def _delete_card(self, card_id):
+        card = Card.objects.get(pk=card_id)
+        card.delete()

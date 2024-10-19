@@ -1,0 +1,48 @@
+1 . card creation via postman
+
+{
+    "request_id": 1,
+    "action": "create_card",
+    "card_data": {
+        "card_number": "1234567890",
+        "card_type": "Credit",
+        "owner": 1,  
+        "issued_date": "2024-01-01",
+        "expiry_date": "2025-01-01",
+        "is_active": true,
+        "count": 0,
+        "scans": "2024-01-01"
+    }
+}
+
+2 . read the created cards
+
+{
+    "request_id": 1,
+    "action": "read_card",
+    "card_id": 1  
+}
+
+3 . update the cards
+
+{
+    "request_id":1,
+    "action": "update_card",
+    "card_data": {
+        "id": 1,  
+        "card_number": "0987654321",
+        "card_type": "Debit",
+        "is_active": false,
+        "count": 5,
+        "scans": "2024-10-01"
+    }
+}
+
+
+4 . delete cards
+
+{
+    "request_id":1,
+    "action": "delete_card",
+    "card_id": 1  
+}
