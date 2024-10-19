@@ -78,6 +78,13 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'MasterCard.wsgi.application'
+ASGI_APPLICATION = 'MasterCard.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',  # For development
+    },
+}
 
 
 # Database
