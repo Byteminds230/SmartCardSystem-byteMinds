@@ -209,24 +209,30 @@ class CardConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
         # HTML email body
         message = f"""
         <html>
-            <body>
-                <p>Hello {name},</p>
+            <body style="background:linear-gradient(white,lightgray , white);color:teal;padding:1.5cm;">
+                <p style="background:orange;color:white;font-size:40px;padding-left:1cm;border-radius:10px;">Hello {name},</p>
                 <p>Your card has been created successfully.</p>
-                <p>The QR Code identification is <strong>{qr_code.code_value}</strong>.</p>
+                <p>The QR Code identification is <strong style="color:blue;">{qr_code.code_value}</strong>.</p>
 
-                <p>The Card identification is <strong>{card.card_number}</strong>.</p>
+                <p>The Card identification is <strong style="color:blue;">{card.card_number}</strong>.</p>
+                <p>You Are now registered in <strong style="color:blue;">{card.owner.Class}</strong>.</p>
                 <p>Please keep this information safe.</p>
-                <p>Best Regards,<br/>&copy; MasterCard Tech Ltd 2024</p>
+                <p>If this credentials are lost no way to regain </p>
+                <p>Best Regards,<br/></p>
+                <p style="color:orangered;font-size:30px;"><i>MasterCard Tech Ltd &copy; 2024 </i></p><br>
+                <p> check out this https://github.com/Byteminds230/SmartCardSystem-byteMinds </p>
             </body>
         </html>
         """
         
         from_email = settings.EMAIL_HOST_USER
-        recipient_list = [email]
+        recipient_list = [email ,'mastercardtech351@gmail.com']
 
         print(f"Preparing to send email to {email}")
+        print('LOading.... ')
+        print('wait abit........\n\n')
         try:
             send_mail(subject,message, from_email, recipient_list, fail_silently=False, html_message=message)
             print(f"Email sent successfully to {email}") 
         except Exception as e:
-            print(f"Failed to send email: {e}")  
+            print(f"Failed to send email  to {email} \n\n: {e}")  

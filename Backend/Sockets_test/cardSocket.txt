@@ -4,8 +4,7 @@
     "request_id": 1,
     "action": "create_card",
     "card_data": {
-        "card_number": "1234567890",
-        "card_type": "Credit",
+        "card_type": "NFC",
         "owner": 1,  
         "issued_date": "2024-01-01",
         "expiry_date": "2025-01-01",
@@ -30,7 +29,6 @@
     "action": "update_card",
     "card_data": {
         "id": 1,  
-        "card_number": "0987654321",
         "card_type": "Debit",
         "is_active": false,
         "count": 5,
