@@ -183,25 +183,25 @@ class CardConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
 
     @database_sync_to_async
     def _generate_qr_code(self, card):
-        # Generate a unique code for the QR
-        code_value = rn.randint(0, 100000000000000000)  # Generate a random number for QR code
-        # Create QR code image
+        
+        code_value = rn.randint(0, 100000000000000000)  
+        # gu creating qr image
         qr_img = qrcode.make(f'Qr Identification: {code_value}, \n\n Card: {card.card_number}, \n\n User_profile: {card.owner.profile}, \n\n Card_Owner: {card.owner.name}')
-        # Save the QR code to a bytes buffer
+    #    kubika iso tumaze gukor
         buffer = io.BytesIO()
         qr_img.save(buffer, format='PNG')
-        buffer.seek(0)  # Reset buffer position to the beginning
+        buffer.seek(0) #  gusubir kuri zro ngo dukore ind
         qr_code_file = ContentFile(buffer.getvalue(), name=f"qr_code_{code_value}:card_{card.card_number}.png")
 
         # Create and save QRCode instance with the image and data
         qr_code_instance = QRCode.objects.create(
             code_value=code_value,
             associated_card=card,
-            owner=card.owner,  # Associate the QR code with the owner of the card
-            image=qr_code_file  # Save the generated image to the image field
+            owner=card.owner,  
+            image=qr_code_file 
         )
         
-        return qr_code_instance  # Return the QR code instance provided
+        return qr_code_instance 
     
     @database_sync_to_async
     def send_confirmation_email(self, email, name, qr_code, card):
@@ -224,9 +224,9 @@ class CardConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
         from_email = settings.EMAIL_HOST_USER
         recipient_list = [email]
 
-        print(f"Preparing to send email to {email}")  # Debug statement
+        print(f"Preparing to send email to {email}")
         try:
             send_mail(subject,message, from_email, recipient_list, fail_silently=False, html_message=message)
-            print(f"Email sent successfully to {email}")  # Debug statement
+            print(f"Email sent successfully to {email}") 
         except Exception as e:
-            print(f"Failed to send email: {e}")  # Log the exception
+            print(f"Failed to send email: {e}")  
