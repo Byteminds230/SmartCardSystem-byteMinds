@@ -78,6 +78,24 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'MasterCard.wsgi.application'
+ASGI_APPLICATION = 'MasterCard.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',  # For development
+    },
+}
+
+# settings.py
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'mastercardtech351@gmail.com'  # Replace with your email
+EMAIL_HOST_PASSWORD = 'luqfcxezbjldquoz'  # Use your app password here
+
+
 
 
 # Database

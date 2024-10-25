@@ -14,7 +14,6 @@ class Card(models.Model):
     is_active = models.BooleanField(default=True)
     daily_scan_count = models.IntegerField(default=0)  # Tracks the number of scans per day
     last_scan_date = models.DateField(null=True, blank=True)  # Date of the last scan
-
     def __str__(self):
         return f'Card Number: {self.card_number} ({self.card_type})'
 
@@ -24,11 +23,11 @@ class Card(models.Model):
 
         # Generate a random card_number if not already set
         if self.card_number is None:
-            self.card_number = random.randint(0, 16)
+            self.card_number = random.randint(0, 100000000000000000)
 
         # Ensure the card number is unique
         while Card.objects.filter(card_number=self.card_number).exists():
-            self.card_number = random.randint(0, 16)
+            self.card_number = random.randint(0, 100000000000000000)
 
         super().save(*args, **kwargs)
 

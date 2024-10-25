@@ -8,8 +8,9 @@ __pycache__/
 .env
 
 # Django
-/backend/db.sqlite3
-/backend/media/
+/Backend/db.sqlite3
+/Backend/media/
+/Backend/MasterCard/images/
 *.pot
 *.py[cod]
 *.sqlite3

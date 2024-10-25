@@ -23,9 +23,12 @@ dist-ssr
 *.sln
 *.sw?
 
-josueEnv
-./josueEnv
+../../Backend/MasterCard/josueEnv/
+josueEnv/
 .josueEnv
+
+
+
 
 .env
 ./.env

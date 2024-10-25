@@ -1,6 +1,7 @@
 import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
+<<<<<<< HEAD
 // Lazy load your pages
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Settings = lazy(() => import('./pages/Settings'));
@@ -19,6 +20,19 @@ function App() {
       </Router>
     </Suspense>
   );
+=======
+return(
+  <>
+  <p>Frank</p>
+  <p>{
+
+    users.map((user , index)=>{
+      return <p key={index}>{user.name}</p>
+    })
+    }</p>
+  </>
+)
+>>>>>>> 12af79fa34dc3eb829edd6aab22356694ddc46e0
 }
 
 export default App;
