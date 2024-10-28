@@ -31,7 +31,9 @@ yarn-error.log*
 # Python virtual environment
 venv/
 env/
-./backend/josueEnv/
+./backend/env/
+.env
+env/
 
 # Editor/IDE specific
 .vscode/

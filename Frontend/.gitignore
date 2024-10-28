@@ -23,10 +23,9 @@ dist-ssr
 *.sln
 *.sw?
 
-
-josueEnv/
-.josueEnv
-
+backend/env/
+env/
+.env
 
 
 
