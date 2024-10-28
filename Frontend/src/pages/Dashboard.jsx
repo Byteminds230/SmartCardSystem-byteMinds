@@ -2,6 +2,7 @@ import React,{Suspense} from 'react'
 import axios from 'axios'
 import { useState,useEffect } from 'react'
 import { Link,Outlet } from 'react-router-dom'
+import {motion} from 'framer-motion'
 
 function Dashboard() {
   const [users , setUsers] = useState([]);
@@ -35,7 +36,7 @@ return(
           </div>
         </nav>
       </head>
-      <aside className='bg-blue-700 p-1 h-[100vh] w-full text-white font-bold bottom-3'>
+      <aside className='bg-blue-700 p-1 h-[100vh] w-10/42 text-white font-bold bottom-3'>
       <ul className="menu bg-base-200 rounded-box">
   <li>
     <a className="tooltip tooltip-right" data-tip="Home">
@@ -101,6 +102,17 @@ return(
       </Suspense>
     </div>
     <Outlet/>
+<motion.div
+initial={{ opacity: 1, scale: 0.5, x:100 }}
+animate={{ opacity: 2, scale: 1 }}
+transition={{ duration: 0.5 }}
+className='p-10 bg-gray-50'
+>
+
+  <p className='text-blue-900'>hello guys </p>
+  <h4 className='text-blue-900'>this is the main page</h4>
+
+</motion.div>
   </div>
   </>
 )

@@ -14,7 +14,7 @@ function Settings() {
         <p className='text-[1vw] w-[9rem]'>this is to say the way</p>
       </div>
       <div className='w-[10rem] rounded-sm bg-gray-200 p-2 text-center justify-center '>
-      <div className="radial-progress text-blue-900" style={{"--value":80}} role="progressbar">50%</div>
+      <div className="radial-progress text-blue-900" style={{"--value":50}} role="progressbar">50%</div>
       </div>      
     </div>
     </>

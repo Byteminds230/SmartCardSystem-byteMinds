@@ -31,7 +31,7 @@ yarn-error.log*
 # Python virtual environment
 venv/
 env/
-./backend/MasterCard/josueEnv/
+./backend/josueEnv/
 
 # Editor/IDE specific
 .vscode/
