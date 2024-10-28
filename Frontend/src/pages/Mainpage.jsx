@@ -11,9 +11,9 @@ function Mainpage() {
     <section id='/nav_list'>
         <Navbar />
     </section>
-    {/* <section id='/jumbtron'>
+    <section id='/jumbtron'>
         <Jumbtron />
-    </section> */}
+    </section>
     <section id='/howitworks'>
     <HowItworks />
     </section>
