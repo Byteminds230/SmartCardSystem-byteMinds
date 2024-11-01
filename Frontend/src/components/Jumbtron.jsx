@@ -13,7 +13,7 @@ function Jumbotron() {
           className="right_staff flex gap-2"
           initial={{ x: 100, opacity: 0 }} 
           animate={{ x: 0, opacity: 1 }} 
-          transition={{ duration: 0.5 }} 
+          transition={{ duration: 2 }} 
         >
           <div className="flex-1 gap-1 inner_staff">
             <h2>Welcome To</h2>
