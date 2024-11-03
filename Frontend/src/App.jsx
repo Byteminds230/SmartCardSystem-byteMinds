@@ -9,7 +9,7 @@ const MainPage = lazy(()=>import('./pages/Mainpage'));
 
 function App() {
   return (
-    <Suspense fallback={<p className="text-center text-[1.5vw] text-slate-900">Loading...</p>}>
+    <Suspense fallback={<p className="text-center text-[1.5vw] text-slate-900 loading">Loading...</p>}>
       <Router>
         <Routes>
           <Route path="/" element={<MainPage />}/>

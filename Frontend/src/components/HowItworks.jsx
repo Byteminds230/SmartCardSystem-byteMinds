@@ -8,20 +8,20 @@ function HowItworks() {
     const howItWorksItems = [
         {
             id: '1',
-            title: 'Click Google Integration',
-            desc: 'Simply log into your Google account, then seamlessly integrate and mirror your planned meeting.',
+            title: 'Smart Access Control',
+            desc: 'Students can easily enter school premises by tapping their cards at entry points. This not only speeds up the entry process but also enhances security by monitoring who enters and exits the school.',
             img: You
         },
         {
             id: '2',
-            title: 'Customization',
-            desc: 'Customize your settings to fit your needs and preferences easily.',
+            title: 'Enhanced Security',
+            desc: 'With TrackXpert, schools can monitor access points effectively. The system logs entries and exits, allowing administrators to keep track of who is on campus at all times.',
             img: You,
         },
         {
             id: '3',
-            title: 'Automation',
-            desc: 'Set up automation features to save time and enhance productivity.',
+            title: 'Attendance Tracking',
+            desc: 'Our system simplifies attendance management. Teachers can quickly check attendance using student cards, providing real-time data that helps in monitoring student participation.',
             img: Vector
 
         },

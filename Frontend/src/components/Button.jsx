@@ -1,30 +1,38 @@
-import React from 'react'
-import {propTypes} from 'prop-types'
+import React from 'react';
+import PropTypes from 'prop-types';
 
-function Button({size,onClick,backgroundColor,position,className,content}) {
+function Button({ size, onClick, backgroundColor, position, className, content }) {
   return (
-    <div className={{className,size,backgroundColor,position}} onClick={onClick}>{content}</div>
-  )
+    <div
+      className={className}
+      onClick={onClick}
+      style={{
+        backgroundColor,
+        position,
+        fontSize: size === 'small' ? '12px' : size === 'large' ? '18px' : '16px',
+      }}
+    >
+      {content}
+    </div>
+  );
 }
 
-export default Button
+Button.defaultProps = {
+  // size: 'large',
+  onClick: () => {},
+  backgroundColor: '#79BB66',
+  position: 'relative',
+  className: '',
+  content: 'The Button',
+};
 
-Button.DefaultProps={
-    size: 'small',
-    onClick: '',
-    backgroundColor: '#fff0000',
-    position: 'normal',
-    className: '',
-    content : 'the Button'
-}
+Button.propTypes = {
+  size: PropTypes.string,
+  onClick: PropTypes.func,
+  backgroundColor: PropTypes.string,
+  position: PropTypes.string,
+  className: PropTypes.string,
+  content: PropTypes.string,
+};
 
-Button.propTypes={
-    size: propTypes.string,
-    onClick: propTypes.func(),
-    backgroundColor: propTypes.string,
-    position: propTypes.string,
-    className: propTypes.string,
-    content :propTypes.string
-}
-
-// this is how we will create the re-usable components
+export default Button;

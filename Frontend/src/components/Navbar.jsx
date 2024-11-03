@@ -11,7 +11,7 @@ function Navbar() {
     ]
   return (
     <>
-    <nav className=' min-h-screen min-w-min flex-1 gap-1 bg-black'>
+    <nav className=' min-h-screen min-w-min'>
         <div className="p-1 right_logo">
             <a href="/"><img src={Logo} alt="the TrackXpert Logo" /></a>
         </div>
